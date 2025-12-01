@@ -31,7 +31,7 @@ string User::getUsername()
 	return username;
 }
 
-void User::Screen()
+void User::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status)
 {
 }
 

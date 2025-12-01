@@ -83,15 +83,18 @@ int loginAttempts = 0;
 int loginType = 0;
 bool loggedIn = false;
 User* currentUser;
+SerialTree* Tree1 = new SerialTree();
+User* Employee1 = new Employee("a", "b", "Employee");
+User* Admin1 = new Admin("b", "c", "Admin");
 
 vector<string> ProductList
 {
-    "Pax_A920",
-    "Pax_A920_Pro",
-    "Lenovo_Think_Vision_T24H_20",
-    "Lenovo_Think_Vision_T24m_10",
-    "Lenovo_Think_Vision_T2223pD",
-    "IOT_Sim_1",
+    "Pax A920",
+    "Pax A920 Pro",
+    "Lenovo Think Vision T24H_20",
+    "Lenovo Think Vision T24m_10",
+    "Lenovo Think Vision T2223pD",
+    "IOT Sim 1",
 };
 
 vector<string> ConditionList
@@ -115,9 +118,6 @@ void Login(string attemptname, string attemptpassword) {
 
 int main()
 {
-    SerialTree * Tree1 = new SerialTree();
-    User * Employee1 = new Employee("a", "b", "Employee");
-    User * Admin1 = new Admin("b", "c", "Admin");
     SystemUsers.emplace_back(Employee1);
     SystemUsers.emplace_back(Admin1);
 
@@ -144,22 +144,9 @@ int main()
         for (int i = 0; i < SystemUsers.size();i++) {
             if (SystemUsers[i]->getUsername() == username && SystemUsers[i]->getPassword() == password) {
                 currentUser = SystemUsers[i];
-                currentUser->Screen();
+                currentUser->Screen(Tree1, ProductList, ConditionList, Status);
                 loggedIn = true;
                 break;
-               /*
-                if (currentUser->getUserType() == "Employee") {
-                    loginType = 1;
-                    break;
-                }
-                else if (currentUser->getUserType() == "Admin") {
-                    loginType = 2;
-                    break;
-                }
-                else if (currentUser->getUserType() == "Customer") {
-                    loginType = 3;
-                    break;
-                }*/
             }
             else {
                 loggedIn = false;
@@ -172,6 +159,8 @@ int main()
     if (loginAttempts == 3) {
         //make program close
     }
+
+
 
     //change into overrides with classes to meet commandment
 

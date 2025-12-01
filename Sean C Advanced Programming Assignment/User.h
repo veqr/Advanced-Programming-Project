@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include "SerialTree.h"
+#include <vector>
 using namespace std;
 
 class User
@@ -17,7 +19,7 @@ public:
 	string getPassword();
 	void setUsername(string setusername);
 	string getUsername();
-	virtual void Screen();
+	virtual void Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status);
 	~User();
 private:
 

@@ -7,7 +7,7 @@ Admin::Admin(string username, string userpassword, string usertype)
 	this->usertype = usertype;
 }
 
-void Admin::Screen()
+void Admin::Screen(SerialTree* Tree1)
 {
 	cout << "Admin";
 }
