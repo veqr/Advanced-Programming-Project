@@ -86,6 +86,9 @@ User* currentUser;
 SerialTree* Tree1 = new SerialTree();
 User* Employee1 = new Employee("a", "b", "Employee");
 User* Admin1 = new Admin("b", "c", "Admin");
+User* Customer1 = new Customer("c", "d", "Customer");
+
+const int initialStockCount = 100;
 
 vector<string> ProductList
 {
@@ -112,22 +115,7 @@ vector<string> Status
 
 vector<User*> SystemUsers;
 
-void Login(string attemptname, string attemptpassword) {
-
-}
-
-int main()
-{
-    SystemUsers.emplace_back(Employee1);
-    SystemUsers.emplace_back(Admin1);
-
-    for (int i = 1; i < 101; i++) 
-    {
-        
-        Tree1->Insert(i, ProductList[2], ConditionList[0], Status[0],"a");
-
-    }
-
+void Login() {
     while (loginAttempts < 4 && loggedIn == false) {
 
         string username;
@@ -159,16 +147,42 @@ int main()
     if (loginAttempts == 3) {
         //make program close
     }
+}
+
+void InitialStockFunction(string product, string condition, string status, int maxSerial) {
+
+    for (int i = (maxSerial-(initialStockCount-1)); i < (maxSerial + 1); i++)
+    {
+
+        Tree1->Insert(i, product, condition, status, "Sean C");
+
+    }
+}
+
+int main()
+{
+    SystemUsers.emplace_back(Employee1);
+    SystemUsers.emplace_back(Admin1);
+    SystemUsers.emplace_back(Customer1);
 
 
+    InitialStockFunction(ProductList[2], ConditionList[0], Status[0], 100);
+    InitialStockFunction(ProductList[0], ConditionList[1], Status[0], 200);
+    InitialStockFunction(ProductList[4], ConditionList[0], Status[0], 300);
+
+
+    Login();
+
+    //delete Tree1;
 
     //change into overrides with classes to meet commandment
 
 
-    
+    //Tree1->Delete(Tree1->root, 2);
     //Tree1->DisplayInOrder(Tree1->root);
 
     //Tree1->Find(55);
+    //Tree1->Find(ProductList[4], Tree1->root);
 
     //Tree1->DisplayRoot();
 

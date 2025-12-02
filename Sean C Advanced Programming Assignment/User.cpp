@@ -37,4 +37,5 @@ void User::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> 
 
 User::~User()
 {
+
 }

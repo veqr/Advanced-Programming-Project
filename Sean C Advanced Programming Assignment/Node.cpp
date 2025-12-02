@@ -14,6 +14,9 @@ Node::Node(int serialNumber, string product, string condition, string status, st
 
 Node::~Node()
 {
+    delete leftChild;
+    delete rightChild;
+    cout << endl << "Node children deallocated" << endl;
 }
 
 void Node::Display()

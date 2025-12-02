@@ -21,7 +21,67 @@ Node* SerialTree::Find(int key)
             return 0;
     }
     current->Display();
-    //return current;
+}
+
+Node* SerialTree::Find(string key, Node* localRoot)
+{
+    if (localRoot != 0) {
+        Find(key, localRoot->leftChild);
+        if(localRoot->product == key) localRoot->Display();
+        Find(key, localRoot->rightChild);
+    }
+    return 0;
+}
+
+Node* SerialTree::Successor(Node* current)
+{
+    cout << 7 << endl;
+    current = current->rightChild;
+    while (current != nullptr && current->leftChild != nullptr) {
+        current = current->leftChild;
+        cout << 8 << endl;
+    }
+    return current;
+}
+
+Node* SerialTree::Delete(Node* localRoot, int key)
+{
+    cout << 1 << endl;
+
+    if (localRoot == NULL) {
+        cout << 2 << endl;
+        return localRoot;
+    }
+
+    if (localRoot->serialNumber > key) {
+        cout << 3 << endl;
+        localRoot->leftChild = Delete(localRoot->leftChild, key);
+    }
+    else if (root->serialNumber < key) {
+        cout << 4 << endl;
+        localRoot->rightChild = Delete(localRoot->rightChild, key);
+    }
+    else {
+        if (localRoot->leftChild == nullptr) {
+            cout << 5 << endl;
+            Node* temp = localRoot;
+            delete localRoot;
+            return temp;
+            cout << "Deleted?" << endl;
+        }
+        if (localRoot->rightChild == nullptr) {
+            cout << 6 << endl;
+            Node* temp = localRoot;
+            delete localRoot;
+            return temp;
+            cout << "Deleted?" << endl;
+        }
+
+        Node* successorTemp = Successor(localRoot);
+        localRoot = successorTemp;
+        localRoot->rightChild = Delete(localRoot->rightChild, successorTemp->serialNumber);
+    }
+    return localRoot;
 }
 
 void SerialTree::DisplayInOrder(Node* localRoot)
@@ -97,4 +157,6 @@ void SerialTree::DisplayRoot()
 
 SerialTree::~SerialTree()
 {
+    delete root;
+    cout << endl << "Binary tree root deallocated" << endl;
 }

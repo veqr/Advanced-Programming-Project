@@ -29,7 +29,9 @@ void Employee::Screen(SerialTree* Tree1, vector<string> ProductList, vector<stri
 		//CreateProduct();
 		break;
 	case 5:
-		//ShowStock();
+		ShowStock(Tree1, ProductList, ConditionList, Status);
+		cout << endl << endl;
+		Screen(Tree1, ProductList, ConditionList, Status);
 		break;
 	default:
 		cout << "Incorrect option, please try again." << endl;
@@ -84,6 +86,68 @@ void Employee::BulkInput(SerialTree* Tree1, vector<string> ProductList, vector<s
 	}
 
 
+}
+
+void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status)
+{
+	cout << endl << "Please enter serial: " << endl;
+	int serial;
+	cin >> serial;
+	Tree1->Find(serial);
+	cout << "What would you like to edit?" << endl << "1. Serial" << endl << "2. Product" << endl << "3. Condition " << endl << "4. Status";
+	int choice;
+	cin >> choice;
+	switch (choice) {
+	case 1:
+		cout << "Please enter the new serial: " << endl;
+		int newserial;
+		cin >> newserial;
+		if (!Tree1->Find(newserial));
+		//need to add deleteing nodes so i can do the edit cleaner
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	}
+}
+
+
+
+void Employee::ShowStock(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status)
+{
+	cout << "Options for browsing stock: " << endl << "1. Search for serial." << endl << "2. Filter by product." << endl << "3. Display all stock" << endl;
+	int choice;
+	cin >> choice;
+	switch (choice) {
+	case 1:
+		cout << "Please enter serial: " << endl;
+		int serial;
+		cin >> serial;
+		Tree1->Find(serial);
+		cout << endl << endl;
+		Screen(Tree1, ProductList, ConditionList, Status);
+		break;
+
+	case 2:
+		cout << "Below is a list of all the product types. Please select a type." << endl;
+		for (int i = 0; i < ProductList.size(); i++) {
+			cout << i << ". " << ProductList[i] << endl;
+		}
+		int choice;
+		cin >> choice;
+		Tree1->Find(ProductList[choice], Tree1->root);
+		cout << endl << endl;
+		Screen(Tree1, ProductList, ConditionList, Status);
+		break;
+	case 3:
+		Tree1->DisplayInOrder(Tree1->root);
+		cout << endl << endl;
+		Screen(Tree1, ProductList, ConditionList, Status);
+		break;
+	}
 }
 
 Employee::~Employee(){}
