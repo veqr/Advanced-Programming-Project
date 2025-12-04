@@ -7,6 +7,7 @@
 #include "Customer.h"
 #include "SerialTree.h"
 #include "Node.h"
+#include "UserManager.h"
 
 using namespace std;
 
@@ -14,58 +15,35 @@ using namespace std;
 
 IDEAS:
 
-    make way to add new items to database
-
-    make way to change existing items
-
-    not sure if deleting will be added, depends if it gives more marks
+    make way to change existing items. deleting too.
 
     maybe add a way to take orders like work using serial numbers. should be able to bulk add serials too. must only add the items and serials if they are the correct type.
 
     add customer accounts so that they can order items from stock and should be able to see how many of each item is in stock and their condition.
-    might need some sort of formula to make searching for stock easier. can retrieve values of what each product contributes to decode the serial if needed. 
 
     sign out so orders can be made and employees can complete orders for demonstration.
-
-
-    need linked lists. maybe with orders? order numbers? to track
-
 
     need friendship
 
     error handling ez with serial for example
 
-    overloading ez
+    static members? WOOOOOOO MANAGEMENT CLASS
 
-    static members = stock levels??
+    create account
 
-    functional pointers hard to do ask at some point// callback maybe? notification.
-    memory management is destructors especially with deleting object so delete linked list from memory
-    
-    polymorphism ez
-
-    operator overloading = hope
-
-    GITHUB
-
-
+    CLASS DIAGRAM
+    CLASS DIAGRAM
+    CLASS DIAGRAM
+    CLASS DIAGRAM
+    CLASS DIAGRAM
+    CLASS DIAGRAM
+    CLASS DIAGRAM
 
 
 
 COMMANDMENTS:
 
-    3.	Friendship
-
-    4.	Static Members
-
-    7.	Functional Pointers
-
-    10.	 Operator Overloading
-
     REMEMBER TO DO EXCEPTION CLASS. FIND OUT HOW THAT APPLIES HERE.
-
-    MAYBE MAKE LINKED LISTS TO CONTRIBUTE TO CLASSES? MAYBE STAY AWAY FROM VECTORS
-
 
 */
 
@@ -75,7 +53,7 @@ COMMANDMENTS:
 /*
 Layout of bulk input and database:
 
-    Serial :: Product :: Condition (New/Used/Faulty) :: Date Added :: Status (Picked/Not Picked)
+    Serial :: Product :: Condition (New/Used/Faulty) :: Date Added :: Status (Picked/Not Picked) :: Last Editor
 
 */
 
@@ -84,11 +62,8 @@ int loginType = 0;
 bool loggedIn = false;
 User* currentUser;
 SerialTree* Tree1 = new SerialTree();
-User* Employee1 = new Employee("a", "b", "Employee");
-User* Admin1 = new Admin("b", "c", "Admin");
-User* Customer1 = new Customer("c", "d", "Customer");
 
-const int initialStockCount = 100;
+vector<User*> systemUsers = UserManager::getUsers();
 
 vector<string> ProductList
 {
@@ -113,10 +88,13 @@ vector<string> Status
     "Available",
 };
 
-vector<User*> SystemUsers;
+string userTypes[3] = { "Employee", "Admin", "Customer" };
+
+//vector<User*> SystemUsers;//make static public in a management class so admin can access to delete a user.
 
 void Login() {
-    while (loginAttempts < 4 && loggedIn == false) {
+    systemUsers = UserManager::getUsers();
+    while (loginAttempts < 3 && loggedIn == false) {
 
         string username;
         string password;
@@ -129,9 +107,9 @@ void Login() {
         cout << "Please enter password" << endl;
         cin >> password;
 
-        for (int i = 0; i < SystemUsers.size();i++) {
-            if (SystemUsers[i]->getUsername() == username && SystemUsers[i]->getPassword() == password) {
-                currentUser = SystemUsers[i];
+        for (int i = 0; i < systemUsers.size();i++) {
+            if (systemUsers[i]->getUsername() == username && systemUsers[i]->getPassword() == password) {
+                currentUser = systemUsers[i];
                 currentUser->Screen(Tree1, ProductList, ConditionList, Status);
                 loggedIn = true;
                 break;
@@ -149,36 +127,163 @@ void Login() {
     }
 }
 
-void InitialStockFunction(string product, string condition, string status, int maxSerial) {
+void InitialStockFunction(string product, string condition, string status, int minSerial, int maxSerial) {
 
-    for (int i = (maxSerial-(initialStockCount-1)); i < (maxSerial + 1); i++)
+    for (int i = minSerial; i < (maxSerial + 1); i++)
     {
 
         Tree1->Insert(i, product, condition, status, "Sean C");
+        Tree1->operator+();
 
+    }
+}
+
+void CreateEmployee() {
+
+    cout << "Please enter the Employee Creation Password." << endl;
+    string passw;
+    cin >> passw;
+    if (passw == "123") {
+        cout << "Please enter a username. Must be unique." << endl;
+
+        cout << systemUsers.size();
+
+        string username;
+        cin >> username;
+        bool unique = true;
+        for (int i = 0; i < systemUsers.size(); i++) {
+            if (systemUsers[i]->getUsername() == username) {
+                unique = false;
+                CreateEmployee();
+            }
+        }
+        if (unique = true) {
+            cout << "Please enter a password." << endl;
+            string password;
+            cin >> password;
+            UserManager::InitialiseUser(username, password, userTypes[0]);
+        }
+    }
+    
+
+}
+
+void CreateAdmin() {
+
+    cout << "Please enter the Admin Creation Password." << endl;
+    string passw;
+    cin >> passw;
+    if (passw == "123") {
+        cout << "Please enter a username. Must be unique." << endl;
+        string username;
+        cin >> username;
+        bool unique = true;
+        for (int i = 0; i < systemUsers.size(); i++) {
+            if (systemUsers[i]->getUsername() == username) {
+                unique = false;
+                CreateAdmin();
+            }
+        }
+        if (unique = true) {
+            cout << "Please enter a password." << endl;
+            string password;
+            cin >> password;
+            UserManager::InitialiseUser(username, password, userTypes[1]);
+        }
+    }
+}
+
+void CreateCustomer() {
+
+    cout << "Please enter a username. Must be unique." << endl;
+    cout << systemUsers.size() << endl;
+    string username;
+    cin >> username;
+    bool unique = true;
+    for (int i = 0; i < systemUsers.size(); i++) {
+        if (systemUsers[i]->getUsername() == username) {
+            unique = false;
+            CreateCustomer();
+        }
+    }
+    if (unique = true) {
+        cout << "Please enter a password." << endl;
+        string password;
+        cin >> password;
+        UserManager::InitialiseUser(username, password, userTypes[2]);
+    }
+}
+
+int CreateUser() {
+    cout << endl << "Enter the account you are creating." << endl << "1. Employee." << endl << "2. Admin." << endl << "3. Customer." << endl << "4. Cancel." << endl;
+    int choice;
+    cin >> choice;
+    switch (choice) {
+    case 1:
+        CreateEmployee();
+        return 0;
+        break;
+
+    case 2:
+        CreateAdmin();
+        return 0;
+        break;
+    case 3:
+        CreateCustomer();
+        return 0;
+        break;
+    case 4:
+        return 0;
+        break;
+    default:
+        return 0;
+    }
+}
+
+void MainMenu() {
+    
+    cout << "Please enter an option from below: " << endl << "1. Log In." << endl << "Create Account." << endl << "3. Close Program." << endl;
+    int choice;
+    cin >> choice;
+    switch (choice) {
+    case 1:
+        Login();
+        break;
+    case 2:
+        if(CreateUser()==0) MainMenu();
+        break;
+    case 3:
+        exit(0);
+        break;
+    default:
+        cout << "Incorrect input. please try again." << endl;
+        MainMenu();
+        break;
     }
 }
 
 int main()
 {
-    SystemUsers.emplace_back(Employee1);
-    SystemUsers.emplace_back(Admin1);
-    SystemUsers.emplace_back(Customer1);
+
+    UserManager::InitialiseUser("a", "b", userTypes[0]);
+    UserManager::InitialiseUser("b", "c", userTypes[1]);
+    UserManager::InitialiseUser("c", "d", userTypes[2]);
 
 
-    InitialStockFunction(ProductList[2], ConditionList[0], Status[0], 100);
-    InitialStockFunction(ProductList[0], ConditionList[1], Status[0], 200);
-    InitialStockFunction(ProductList[4], ConditionList[0], Status[0], 300);
+    InitialStockFunction(ProductList[0], ConditionList[1], Status[0], 101, 200);
+    InitialStockFunction(ProductList[2], ConditionList[0], Status[0], 1, 100);
+    InitialStockFunction(ProductList[4], ConditionList[0], Status[0], 201, 300);
+
+    systemUsers = UserManager::getUsers();
+
+    MainMenu();
 
 
-    Login();
-
-    //delete Tree1;
-
-    //change into overrides with classes to meet commandment
-
-
-    //Tree1->Delete(Tree1->root, 2);
+    //Tree1->Delete(2);
+    //Tree1->Delete(300);
+    //Tree1->Delete(1);
+    //Tree1->Delete(150);
+    //Tree1->Delete(250);
     //Tree1->DisplayInOrder(Tree1->root);
 
     //Tree1->Find(55);
@@ -188,4 +293,5 @@ int main()
 
     //Tree1->SortTree(Tree1->root);
 
+    //delete Tree1;
 }

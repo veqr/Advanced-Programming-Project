@@ -1,4 +1,6 @@
 #include "SerialTree.h"
+//include my own exception class. single header file.
+//miussing and alreayd exists
 
 
 SerialTree::SerialTree()
@@ -7,7 +9,9 @@ SerialTree::SerialTree()
     TempList;
 }
 
-
+void SerialTree::operator+() {
+    stockLevel ++;
+}
 
 Node* SerialTree::Find(int key)
 {
@@ -21,32 +25,26 @@ Node* SerialTree::Find(int key)
             return 0;
     }
     current->Display();
+    return current;
 }
 
-Node* SerialTree::Find(string key, Node* localRoot)
+void SerialTree::Find(string key, Node* localRoot, void (Node::*onFind)())//function pointer BOOM https://www.geeksforgeeks.org/cpp/function-pointer-to-member-function-in-cpp/
 {
     if (localRoot != 0) {
-        Find(key, localRoot->leftChild);
-        if(localRoot->product == key) localRoot->Display();
-        Find(key, localRoot->rightChild);
+        Find(key, localRoot->leftChild, onFind);
+        if(localRoot->product == key) (localRoot->*onFind)();
+        Find(key, localRoot->rightChild, onFind);
     }
-    return 0;
 }
 
-Node* SerialTree::Successor(Node* current)
+void SerialTree::Delete(int key)
 {
-    cout << 7 << endl;
-    current = current->rightChild;
-    while (current != nullptr && current->leftChild != nullptr) {
-        current = current->leftChild;
-        cout << 8 << endl;
-    }
-    return current;
+    root = Delete(root, key);
 }
 
 Node* SerialTree::Delete(Node* localRoot, int key)
 {
-    cout << 1 << endl;
+    cout << 1 << " " << key << " " << localRoot->serialNumber << endl;
 
     if (localRoot == NULL) {
         cout << 2 << endl;
@@ -57,31 +55,64 @@ Node* SerialTree::Delete(Node* localRoot, int key)
         cout << 3 << endl;
         localRoot->leftChild = Delete(localRoot->leftChild, key);
     }
-    else if (root->serialNumber < key) {
+    else if (localRoot->serialNumber < key) {
         cout << 4 << endl;
         localRoot->rightChild = Delete(localRoot->rightChild, key);
     }
     else {
-        if (localRoot->leftChild == nullptr) {
-            cout << 5 << endl;
-            Node* temp = localRoot;
+
+        cout << 10 << endl;
+
+        // if both are null, delete local and return null
+
+        if (localRoot->leftChild == NULL && localRoot->rightChild == NULL) {
             delete localRoot;
-            return temp;
-            cout << "Deleted?" << endl;
-        }
-        if (localRoot->rightChild == nullptr) {
-            cout << 6 << endl;
-            Node* temp = localRoot;
-            delete localRoot;
-            return temp;
-            cout << "Deleted?" << endl;
+            return NULL;
         }
 
-        Node* successorTemp = Successor(localRoot);
-        localRoot = successorTemp;
-        localRoot->rightChild = Delete(localRoot->rightChild, successorTemp->serialNumber);
+        // if one is null, delete local, return other
+
+        if (localRoot->leftChild == NULL) {
+            Node* temp = localRoot->rightChild;
+            localRoot->rightChild = NULL;
+            delete localRoot;
+            return temp;
+        }
+
+        if (localRoot->rightChild == NULL) {
+            Node* temp = localRoot->leftChild;
+            localRoot->leftChild = NULL;
+            delete localRoot;
+            return temp;
+        }
+
+        // if both are nonnull, delete local, return left, add right to right most node of left child
+
+        Node* temp = localRoot->leftChild;
+
+
+        while (temp->rightChild) {
+            temp = temp->rightChild;
+        }
+        
+        temp->rightChild = localRoot->rightChild;
+        localRoot->rightChild = NULL;
+
+        temp = localRoot->leftChild;
+        localRoot->leftChild = NULL;
+
+        delete localRoot;
+        return temp;
+
+
     }
     return localRoot;
+}
+
+Node* SerialTree::GetData(int serialNumber)
+{
+    Node* temp = Find(serialNumber);
+    return temp;
 }
 
 void SerialTree::DisplayInOrder(Node* localRoot)
@@ -104,10 +135,12 @@ void SerialTree::Insert(int serialNumber, string product, string condition, stri
         current = root;
         Node* parent;
         while (true) {
+            //if keys same throw error
             parent = current;
             if (serialNumber < current->serialNumber) {
                 current = current->leftChild;
                 if (current == 0) {
+
                     parent->leftChild = newNode;
                     return;
                 }
@@ -115,6 +148,7 @@ void SerialTree::Insert(int serialNumber, string product, string condition, stri
             else {
                 current = current->rightChild;
                 if (current == 0) {
+
                     parent->rightChild = newNode;
                     return;
                 }
@@ -123,36 +157,14 @@ void SerialTree::Insert(int serialNumber, string product, string condition, stri
     }
 }
 
-void SerialTree::SortTree(Node* localRoot)
-{
-
-    
-    if (localRoot != NULL) {
-        SortTree(localRoot->leftChild);
-        TempList.emplace_back(localRoot);
-        //localRoot->Display();
-        SortTree(localRoot->rightChild);
-    }
-
-    //cout << TempList[3]->serialNumber;
-    //cout << TempList.size();
-
-    //for (int i = 0; i < TempList.size(); i++) {
-        //cout << TempList[i] << endl;
-    //}
-
-    //int median = (TempList[0]->serialNumber - TempList[TempList.size() - 1]->serialNumber) / 2;
-
-    //cout << TempList[0]->serialNumber << endl;
-
-
-    //cout << TempList[0]->serialNumber << endl << TempList[TempList.size() - 1]->serialNumber << endl << "Median: " << median << endl;
-    
-}
-
 void SerialTree::DisplayRoot()
 {
     cout << root->serialNumber;
+}
+
+int SerialTree::GetStockLevel()
+{
+    return stockLevel;
 }
 
 SerialTree::~SerialTree()

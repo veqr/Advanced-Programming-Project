@@ -21,5 +21,5 @@ Node::~Node()
 
 void Node::Display()
 {
-    cout << "S/N: " << this->serialNumber <<  "  ::  Product: " << this->product << "  ::  Condition: " << this->condition << "  ::  Status: " << this->status << endl;
+    cout << "S/N: " << this->serialNumber <<  "  ::  Product: " << this->product << "  ::  Condition: " << this->condition << "  ::  Status: " << this->status <<  " :: Last Editor: " << lastEditor << endl;
 }
