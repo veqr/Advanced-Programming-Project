@@ -7,11 +7,16 @@
 
 class UserManager
 {
+private:
+	static vector<vector<string>> customerDetails;
+	static void ShowCustomerDetails(int key);
 public:
+	friend class Admin;
+	
 	static vector<User*> SystemUsers;
 
 	UserManager();
 	static vector<User*> getUsers();
-	static void InitialiseUser(string name, string password, string type);
+	static void InitialiseUser(string name, string password, string type, string address);
 };
 

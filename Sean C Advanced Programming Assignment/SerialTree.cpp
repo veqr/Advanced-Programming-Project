@@ -1,5 +1,5 @@
 #include "SerialTree.h"
-//include my own exception class. single header file.
+#include "Errors.h"
 //miussing and alreayd exists
 
 
@@ -7,6 +7,71 @@ SerialTree::SerialTree()
 {
     root = 0;
     TempList;
+}
+
+int SerialTree::GetSerial(int key)
+{
+    Node* temp = Find(key);
+
+    return temp->serialNumber;
+}
+
+string SerialTree::GetProduct(int key)
+{
+    Node* temp;
+    try {
+        temp = Find(key);
+        
+    }
+    catch (Errors& e) {
+        cout << e.delwhat() << endl << endl;
+        cin.clear();
+        cin.ignore();
+        return "";
+    }
+    return temp->product;
+}
+
+string SerialTree::GetCondition(int key)
+{
+    Node* temp = Find(key);
+
+    return temp->condition;
+}
+
+string SerialTree::GetStatus(int key)
+{
+    Node* temp = Find(key);
+
+    return temp->status;
+}
+
+string SerialTree::GetEditor(int key)
+{
+    Node* temp = Find(key);
+
+    return temp->lastEditor;
+}
+
+void SerialTree::SetProduct(string product, int key, string username)
+{
+    Node* temp = Find(key);
+    temp->product = product;
+    temp->lastEditor = username;
+}
+
+void SerialTree::SetCondition(string condition, int key, string username)
+{
+    Node* temp = Find(key);
+    temp->condition = condition;
+    temp->lastEditor = username;
+}
+
+void SerialTree::SetStatus(string status, int key, string username)
+{
+    Node* temp = Find(key);
+    temp->status = status;
+    temp->lastEditor = username;
 }
 
 void SerialTree::operator+() {
@@ -21,8 +86,8 @@ Node* SerialTree::Find(int key)
             current = current->leftChild;
         else
             current = current->rightChild;
-        if (current == 0)
-            return 0;
+        if (current == nullptr)
+            throw Errors();
     }
     current->Display();
     return current;
@@ -39,7 +104,7 @@ void SerialTree::Find(string key, Node* localRoot, void (Node::*onFind)())//func
 
 void SerialTree::Delete(int key)
 {
-    root = Delete(root, key);
+        root = Delete(root, key); 
 }
 
 Node* SerialTree::Delete(Node* localRoot, int key)

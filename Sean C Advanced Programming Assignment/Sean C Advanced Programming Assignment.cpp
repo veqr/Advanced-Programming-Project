@@ -8,6 +8,7 @@
 #include "SerialTree.h"
 #include "Node.h"
 #include "UserManager.h"
+#include "Errors.h"
 
 using namespace std;
 
@@ -15,22 +16,6 @@ using namespace std;
 
 IDEAS:
 
-    make way to change existing items. deleting too.
-
-    maybe add a way to take orders like work using serial numbers. should be able to bulk add serials too. must only add the items and serials if they are the correct type.
-
-    add customer accounts so that they can order items from stock and should be able to see how many of each item is in stock and their condition.
-
-    sign out so orders can be made and employees can complete orders for demonstration.
-
-    need friendship
-
-    error handling ez with serial for example
-
-    static members? WOOOOOOO MANAGEMENT CLASS
-
-    create account
-
     CLASS DIAGRAM
     CLASS DIAGRAM
     CLASS DIAGRAM
@@ -38,12 +23,6 @@ IDEAS:
     CLASS DIAGRAM
     CLASS DIAGRAM
     CLASS DIAGRAM
-
-
-
-COMMANDMENTS:
-
-    REMEMBER TO DO EXCEPTION CLASS. FIND OUT HOW THAT APPLIES HERE.
 
 */
 
@@ -53,7 +32,7 @@ COMMANDMENTS:
 /*
 Layout of bulk input and database:
 
-    Serial :: Product :: Condition (New/Used/Faulty) :: Date Added :: Status (Picked/Not Picked) :: Last Editor
+    Serial :: Product :: Condition (New/Used/Faulty) :: Status (Picked/Not Picked) :: Last Editor
 
 */
 
@@ -62,6 +41,9 @@ int loginType = 0;
 bool loggedIn = false;
 User* currentUser;
 SerialTree* Tree1 = new SerialTree();
+Orders* orders = new Orders();
+
+vector<string> dummyOrder;
 
 vector<User*> systemUsers = UserManager::getUsers();
 
@@ -110,7 +92,7 @@ void Login() {
         for (int i = 0; i < systemUsers.size();i++) {
             if (systemUsers[i]->getUsername() == username && systemUsers[i]->getPassword() == password) {
                 currentUser = systemUsers[i];
-                currentUser->Screen(Tree1, ProductList, ConditionList, Status);
+                currentUser->Screen(Tree1, ProductList, ConditionList, Status, orders);
                 loggedIn = true;
                 break;
             }
@@ -123,7 +105,7 @@ void Login() {
     }
 
     if (loginAttempts == 3) {
-        //make program close
+        exit(0);
     }
 }
 
@@ -140,7 +122,7 @@ void InitialStockFunction(string product, string condition, string status, int m
 
 void CreateEmployee() {
 
-    cout << "Please enter the Employee Creation Password." << endl;
+    cout << endl << "Please enter the Employee Creation Password." << endl << endl;
     string passw;
     cin >> passw;
     if (passw == "123") {
@@ -161,8 +143,11 @@ void CreateEmployee() {
             cout << "Please enter a password." << endl;
             string password;
             cin >> password;
-            UserManager::InitialiseUser(username, password, userTypes[0]);
+            UserManager::InitialiseUser(username, password, userTypes[0], "Ignore");
         }
+    }
+    else {
+        cout << "Incorrect Password." << endl << endl;
     }
     
 
@@ -170,7 +155,7 @@ void CreateEmployee() {
 
 void CreateAdmin() {
 
-    cout << "Please enter the Admin Creation Password." << endl;
+    cout << endl << "Please enter the Admin Creation Password." << endl << endl;
     string passw;
     cin >> passw;
     if (passw == "123") {
@@ -188,14 +173,17 @@ void CreateAdmin() {
             cout << "Please enter a password." << endl;
             string password;
             cin >> password;
-            UserManager::InitialiseUser(username, password, userTypes[1]);
+            UserManager::InitialiseUser(username, password, userTypes[1], "Ignore");
         }
+    }
+    else {
+        cout << "Incorrect Password." << endl << endl;
     }
 }
 
 void CreateCustomer() {
 
-    cout << "Please enter a username. Must be unique." << endl;
+    cout << endl << "Please enter a username. Must be unique." << endl << endl;
     cout << systemUsers.size() << endl;
     string username;
     cin >> username;
@@ -210,14 +198,34 @@ void CreateCustomer() {
         cout << "Please enter a password." << endl;
         string password;
         cin >> password;
-        UserManager::InitialiseUser(username, password, userTypes[2]);
+
+        cout << endl << "Please enter address." << endl;
+        string address;
+        cin >> address;
+
+        UserManager::InitialiseUser(username, password, userTypes[2], address);
     }
 }
 
 int CreateUser() {
-    cout << endl << "Enter the account you are creating." << endl << "1. Employee." << endl << "2. Admin." << endl << "3. Customer." << endl << "4. Cancel." << endl;
+    cout << endl << "Enter the account you are creating." << endl << "1. Employee." << endl << "2. Admin." << endl << "3. Customer." << endl << "4. Cancel." << endl << endl;
     int choice;
-    cin >> choice;
+
+    try {
+        cin >> choice;
+        if (cin.fail()) {
+            throw Errors();
+        }
+
+
+    }
+    catch (Errors& e) {
+        cout << e.what() << endl << endl;
+        cin.clear();
+        cin.ignore();
+        return 0;
+    }
+
     switch (choice) {
     case 1:
         CreateEmployee();
@@ -242,56 +250,68 @@ int CreateUser() {
 
 void MainMenu() {
     
-    cout << "Please enter an option from below: " << endl << "1. Log In." << endl << "Create Account." << endl << "3. Close Program." << endl;
+    cout << "Please enter an option from below: " << endl << "1. Log In." << endl << "2. Create Account." << endl << "3. Close Program." << endl << endl;
     int choice;
-    cin >> choice;
+
+    try {
+        cin >> choice;
+        if (cin.fail()) {
+            throw Errors();
+        }
+
+
+    }
+    catch (Errors& e) {
+        cout << e.what() << endl << endl;
+        cin.clear();
+        cin.ignore();
+        return;
+    }
+
     switch (choice) {
     case 1:
         Login();
         break;
     case 2:
-        if(CreateUser()==0) MainMenu();
-        break;
+        if (CreateUser() == 0) break;
     case 3:
         exit(0);
         break;
     default:
         cout << "Incorrect input. please try again." << endl;
-        MainMenu();
         break;
     }
+}
+
+void DummyOrders() {
+
 }
 
 int main()
 {
 
-    UserManager::InitialiseUser("a", "b", userTypes[0]);
-    UserManager::InitialiseUser("b", "c", userTypes[1]);
-    UserManager::InitialiseUser("c", "d", userTypes[2]);
+    UserManager::InitialiseUser("a", "b", userTypes[0], "Ignore");
+    UserManager::InitialiseUser("b", "c", userTypes[1], "Ignore");
+
+    UserManager::InitialiseUser("c", "d", userTypes[2], "70 Clarendon View BR5 8PF");
+    UserManager::InitialiseUser("d", "e", userTypes[2], "16 North Way BR8 9BH");
 
 
-    InitialStockFunction(ProductList[0], ConditionList[1], Status[0], 101, 200);
-    InitialStockFunction(ProductList[2], ConditionList[0], Status[0], 1, 100);
-    InitialStockFunction(ProductList[4], ConditionList[0], Status[0], 201, 300);
+    InitialStockFunction(ProductList[0], ConditionList[0], Status[1], 101, 200);
+    InitialStockFunction(ProductList[2], ConditionList[0], Status[1], 1, 100);
+    InitialStockFunction(ProductList[4], ConditionList[0], Status[1], 201, 300);
 
     systemUsers = UserManager::getUsers();
 
-    MainMenu();
+    DummyOrders();
+
+    while (true) {
+        loggedIn = false;
+        loginAttempts = 0;
+        MainMenu();
+    }
 
 
-    //Tree1->Delete(2);
-    //Tree1->Delete(300);
-    //Tree1->Delete(1);
-    //Tree1->Delete(150);
-    //Tree1->Delete(250);
-    //Tree1->DisplayInOrder(Tree1->root);
-
-    //Tree1->Find(55);
-    //Tree1->Find(ProductList[4], Tree1->root);
-
-    //Tree1->DisplayRoot();
-
-    //Tree1->SortTree(Tree1->root);
-
-    //delete Tree1;
+    delete Tree1;
+    Tree1 = nullptr;
 }

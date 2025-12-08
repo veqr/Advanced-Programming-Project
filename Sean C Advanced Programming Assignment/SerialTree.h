@@ -19,6 +19,17 @@ public:
 	void Delete(int key);
 	Node* Delete(Node* localRoot, int key);
 	Node* GetData(int serialNumber);
+
+	int GetSerial(int key);
+	string GetProduct(int key);
+	string GetCondition(int key);
+	string GetStatus(int key);
+	string GetEditor(int key);
+	
+	void SetProduct(string product, int key, string username);
+	void SetCondition(string condition, int key, string username);
+	void SetStatus(string status, int key, string username);
+	
 	void DisplayInOrder(Node* localRoot);
 	void Insert(int serialNumber, string product, string condition, string status, string lastEditor);
 	void DisplayRoot();

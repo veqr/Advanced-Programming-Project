@@ -1,42 +1,55 @@
 #include "Employee.h"
 
-Employee::Employee(string username, string userpassword, string usertype)
+vector<int> Employee::temp;
+
+Employee::Employee(string username, string userpassword, string usertype, string address)
 {
 	this->username = username;
 	this->userpassword = userpassword;
 	this->usertype = usertype;
 }
 
-void Employee::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status)
+void Employee::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
 {
 	cout << endl << "Logged in as Employee" << endl << "Below are the menu options: " << endl;
-	cout << "1. Scan new products into the system." << endl << "2. Edit existing product." << endl << "3. Open the orders list." << endl << "4. Create new product." << endl << "5. Show current stock." << endl << endl;
+	cout << "1. Scan new products into the system." << endl << "2. Edit existing product." << endl << "3. Open the orders list." << endl << "4. Show current stock." << endl << endl;
 
 	int choice;
-	cin >> choice; //maybe add some exception handling here
+	try {
+		cin >> choice;
+		if (cin.fail()) {
+			throw Errors();
+		}
+
+
+	}
+	catch (Errors& e) {
+		cout << e.what() << endl << endl;
+		cin.clear();
+		cin.ignore();
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
+	}
+
 	switch (choice) {
 	case 1:
-		BulkInput(Tree1, ProductList, ConditionList, Status);
+		BulkInput(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 	
 	case 2:
-		EditProduct(Tree1, ProductList, ConditionList, Status);
+		EditProduct(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 	case 3:
-		//OrderList();
+		OrderMenu(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 	case 4:
-		//CreateProduct();
-		break;
-	case 5:
 		cout << "Current stock count: " << Tree1->GetStockLevel() << endl << endl;
-		ShowStock(Tree1, ProductList, ConditionList, Status);
+		ShowStock(Tree1, ProductList, ConditionList, Status, orders);
 		cout << endl << endl;
-		Screen(Tree1, ProductList, ConditionList, Status);
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 	default:
 		cout << "Incorrect option, please try again." << endl << endl;
-		Screen(Tree1, ProductList, ConditionList, Status);
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 	}
 
@@ -44,37 +57,135 @@ void Employee::Screen(SerialTree* Tree1, vector<string> ProductList, vector<stri
 
 }
 
-void Employee::BulkInput(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status)
+void Employee::OrderMenu(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+{
+	orders->ShowOrders();
+	cout << endl << "What order would you like to fulfill? Enter -1 to go cancel." << endl << endl;
+	int choice;
+
+	try {
+		cin >> choice;
+		if (cin.fail()) {
+			throw Errors();
+		}
+
+
+	}
+	catch (Errors& e) {
+		cout << e.what() << endl << endl;
+		cin.clear();
+		cin.ignore();
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
+	}
+
+	if (choice == -1) {
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
+	}
+	else {
+		orders->DisplayOrder(choice-1);
+	}
+
+	int product = stoi(orders->ordersList[choice - 1][3]);
+	string quantity = orders->ordersList[choice - 1][4];
+
+	for (int i = 0; i < stoi(quantity); i++) {
+		int tempserial;
+		cout << endl << "Please enter the serial of the product you would like to pick." << endl;
+		cin >> tempserial;
+		if (Tree1->Find(tempserial)) {
+
+			//cout << endl << endl << ProductList[product] << endl << endl;
+
+			if (Tree1->GetProduct(tempserial) == ProductList[product]) {
+				Tree1->SetStatus("Picked", tempserial, this->username);
+			}
+			else {
+				cout << "Incorrect Product, please restart." << endl << endl;
+				Screen(Tree1, ProductList, ConditionList, Status, orders);
+				break;
+			}
+
+		}
+	}
+
+	orders->CompleteOrder(choice - 1);
+	cout << endl << "Order Complete!" << endl;
+	orders->DisplayOrder(choice - 1);
+	Screen(Tree1, ProductList, ConditionList, Status, orders);
+
+}
+
+void Employee::BulkInput(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
 {
 
 	int product;
 	int condition;
 
-	cout << "In this menu every product scanned will share the same parameters which you will set, unless you would like to change these halfway through." << endl;
-	//Tree1->DisplayInOrder(Tree1->root);
+	cout << endl << "In this menu every product scanned will share the same parameters which you will set, unless you would like to change these halfway through." << endl;
 
-	cout << "Below is a list of all the products we take: " << endl;
+	cout << "Below is a list of all the products we take: " << endl << endl;
 	for (int i = 0;i < ProductList.size();i++) {
 		cout << i << ". " << ProductList[i] << endl;
 	}
-	cout << "Please select the number of the product to bulk scan: " << endl << endl;
-	cin >> product;
+	cout << endl << "Please select the number of the product to bulk scan: " << endl << endl;
+
+	try {
+		cin >> product;
+		if (cin.fail()) {
+			throw Errors();
+		}
 
 
-	cout << "Below is a list of conditions: " << endl;
+	}
+	catch (Errors& e) {
+		cout << e.what() << endl << endl;
+		cin.clear();
+		cin.ignore();
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
+	}
+
+
+	cout << endl << "Below is a list of conditions: " << endl << endl;
 	for (int i = 0;i < ConditionList.size();i++) {
 		cout << i << ". " << ConditionList[i] << endl;
 	}
 	cout << "Please select a condition: " << endl << endl;
-	cin >> condition;
+	
+	try {
+		cin >> condition;
+		if (cin.fail()) {
+			throw Errors();
+		}
+
+
+	}
+	catch (Errors& e) {
+		cout << e.what() << endl << endl;
+		cin.clear();
+		cin.ignore();
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
+	}
 
 	while (true) {
 
 		int serial;
 		cout << endl << "Please enter serial. Type -1 to stop." << endl << endl;
-		cin >> serial; //maybe exception here?
+		try {
+			cin >> serial;
+			if (cin.fail()) {
+				throw Errors();
+			}
+
+
+		}
+		catch (Errors& e) {
+			cout << e.what() << endl << endl;
+			cin.clear();
+			cin.ignore();
+			Screen(Tree1, ProductList, ConditionList, Status, orders);
+		}
 		if (serial == -1) {
-			Screen(Tree1, ProductList, ConditionList, Status);
+			Screen(Tree1, ProductList, ConditionList, Status, orders);
 			break;
 		}
 		if (!Tree1->Find(serial)) {
@@ -90,13 +201,18 @@ void Employee::BulkInput(SerialTree* Tree1, vector<string> ProductList, vector<s
 
 }
 
-void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status)
+void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
 {
 	cout << endl << "Please enter serial: " << endl << endl;
 	int serial;
 	cin >> serial;
-	Tree1->Find(serial);
-	cout << "What would you like to edit?" << endl << "1. Serial" << endl << "2. Product" << endl << "3. Condition " << endl << "4. Status" << endl << "5. Cancel." << endl << endl;
+	string temp = Tree1->GetProduct(serial);
+	if (temp == "") {
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
+		return;
+	}
+
+	cout << endl << "What would you like to edit?" << endl << "1. Serial" << endl << "2. Product" << endl << "3. Condition " << endl << "4. Status" << endl << "5. Cancel." << endl << endl;
 	int choice;
 	cin >> choice;
 	switch (choice) {
@@ -105,28 +221,84 @@ void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector
 		int newserial;
 		cin >> newserial;
 
-		//was here yesterday
+		//if (!Tree1->Find(newserial)) {
 
-		if (!Tree1->Find(newserial)) {
-			//Node* temp = Tree1->Find(newserial);
-			//Tree1->Insert(newserial, temp->product, temp->condition, temp->status, this->username);
-			Tree1->Delete(serial);
-			Screen(Tree1, ProductList, ConditionList, Status);
+		Tree1->Insert(newserial, Tree1->GetProduct(serial), Tree1->GetCondition(serial), Tree1->GetStatus(serial), this->username);
+		Tree1->Delete(serial);
+		cout << "New item added." << endl;
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
+
+			//break;
+		//}
+		//else {
+		//	cout << "Already exists." << endl;
+		//	EditProduct(Tree1, ProductList, ConditionList, Status, orders);
+		//	break;
+		//}
+		
+	case 2:
+		cout << endl << "Please enter the product to be changed to." << endl << endl;
+		for (int i = 0; i < ProductList.size(); i++) {
+			cout << i << ". " << ProductList[i] << endl;
+		}
+		int product;
+		cin >> product;
+
+		if (Tree1->Find(serial)) {
+
+			Tree1->SetProduct(ProductList[product], serial, this->username);
+			Screen(Tree1, ProductList, ConditionList, Status, orders);
 			break;
 		}
 		else {
-			cout << "Already exists." << endl;
-			EditProduct(Tree1, ProductList, ConditionList, Status);
+			cout << "Doesn't exist." << endl;
+			EditProduct(Tree1, ProductList, ConditionList, Status, orders);
 			break;
 		}
-		
-	case 2:
+
 		break;
 	case 3:
+		cout << endl << "Please enter the condition to be changed to." << endl << endl;
+		for (int i = 0; i < ConditionList.size(); i++) {
+			cout << i << ". " << ConditionList[i] << endl;
+		}
+		int condition;
+		cin >> condition;
+
+		if (Tree1->Find(serial)) {
+
+			Tree1->SetCondition(ConditionList[condition], serial, this->username);
+			Screen(Tree1, ProductList, ConditionList, Status, orders);
+			break;
+		}
+		else {
+			cout << "Doesn't exist." << endl;
+			EditProduct(Tree1, ProductList, ConditionList, Status, orders);
+			break;
+		}
 		break;
 	case 4:
+		cout << endl << "Please enter the status to be changed to." << endl << endl;
+		for (int i = 0; i < Status.size(); i++) {
+			cout << i << ". " << Status[i] << endl;
+		}
+		int status;
+		cin >> status;
+
+		if (Tree1->Find(serial)) {
+
+			Tree1->SetStatus(Status[status], serial, this->username);
+			Screen(Tree1, ProductList, ConditionList, Status, orders);;
+			break;
+		}
+		else {
+			cout << "Doesn't exist." << endl;
+			EditProduct(Tree1, ProductList, ConditionList, Status, orders);
+			break;
+		}
 		break;
 	case 5:
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 	default:
 		break;
@@ -135,7 +307,7 @@ void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector
 
 void Employee::DeleteProduct(SerialTree* Tree1)
 {
-	cout << "What item would you like to delete? Please enter the serial number." << endl;
+	cout << endl << "What item would you like to delete? Please enter the serial number." << endl << endl;
 	int delnum;
 	cin >> delnum;
 	Tree1->Delete(delnum);
@@ -143,23 +315,23 @@ void Employee::DeleteProduct(SerialTree* Tree1)
 
 
 
-void Employee::ShowStock(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status)
+void Employee::ShowStock(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
 {
-	cout << "Options for browsing stock: " << endl << "1. Search for serial." << endl << "2. Filter by product." << endl << "3. Display all stock" << endl << endl;
+	cout << endl << "Options for browsing stock: " << endl << "1. Search for serial." << endl << "2. Filter by product." << endl << "3. Display all stock" << endl << endl;
 	int choice;
 	cin >> choice;
 	switch (choice) {
 	case 1:
-		cout << "Please enter serial: " << endl << endl;
+		cout << endl << "Please enter serial: " << endl << endl;
 		int serial;
 		cin >> serial;
 		Tree1->Find(serial);
 		cout << endl << endl;
-		Screen(Tree1, ProductList, ConditionList, Status);
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 
 	case 2:
-		cout << "Below is a list of all the product types. Please select a type." << endl << endl;
+		cout << endl << "Below is a list of all the product types. Please select a type." << endl << endl;
 		for (int i = 0; i < ProductList.size(); i++) {
 			cout << i << ". " << ProductList[i] << endl;
 		}
@@ -167,12 +339,12 @@ void Employee::ShowStock(SerialTree* Tree1, vector<string> ProductList, vector<s
 		cin >> choice;
 		Tree1->Find(ProductList[choice], Tree1->root, &Node::Display);
 		cout << endl << endl;
-		Screen(Tree1, ProductList, ConditionList, Status);
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 	case 3:
 		Tree1->DisplayInOrder(Tree1->root);
 		cout << endl << endl;
-		Screen(Tree1, ProductList, ConditionList, Status);
+		Screen(Tree1, ProductList, ConditionList, Status, orders);
 		break;
 	}
 }

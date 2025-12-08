@@ -128,10 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Admin.cpp" />
-    <ClCompile Include="BinaryHelp.cpp" />
     <ClCompile Include="Customer.cpp" />
     <ClCompile Include="Employee.cpp" />
+    <ClCompile Include="Errors.cpp" />
     <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Orders.cpp" />
     <ClCompile Include="Sean C Advanced Programming Assignment.cpp" />
     <ClCompile Include="SerialTree.cpp" />
     <ClCompile Include="User.cpp" />
@@ -141,7 +142,9 @@
     <ClInclude Include="Admin.h" />
     <ClInclude Include="Customer.h" />
     <ClInclude Include="Employee.h" />
+    <ClInclude Include="Errors.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Orders.h" />
     <ClInclude Include="SerialTree.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="UserManager.h" />

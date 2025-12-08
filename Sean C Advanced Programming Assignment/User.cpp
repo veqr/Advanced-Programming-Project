@@ -1,4 +1,5 @@
 #include "User.h"
+#include "Orders.h"
 
 User::User()
 {
@@ -31,7 +32,7 @@ string User::getUsername()
 	return username;
 }
 
-void User::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status)
+void User::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
 {
 }
 
