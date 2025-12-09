@@ -1,2 +1,12 @@
-﻿  Sean C Advanced Programming Assignment.cpp
-  Sean C Advanced Programming Assignment.vcxproj -> F:\Advanced Programming\Project Files\Sean C Advanced Programming Assignment\x64\Debug\Sean C Advanced Programming Assignment.exe
+﻿  Admin.cpp
+  Customer.cpp
+  Employee.cpp
+E:\Advanced Programming\Project Files\Sean C Advanced Programming Assignment\Employee.cpp(199,18): warning C4101: 'e': unreferenced local variable
+  Orders.cpp
+E:\Advanced Programming\Project Files\Sean C Advanced Programming Assignment\Orders.cpp(47,28): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Sean C Advanced Programming Assignment.cpp
+  SerialTree.cpp
+  User.cpp
+  UserManager.cpp
+  Generating Code...
+  Sean C Advanced Programming Assignment.vcxproj -> E:\Advanced Programming\Project Files\Sean C Advanced Programming Assignment\x64\Debug\Sean C Advanced Programming Assignment.exe

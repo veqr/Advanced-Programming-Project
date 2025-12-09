@@ -9,7 +9,7 @@ void User::setUserType(string setusertype)
 {
 }
 
-string User::getUserType()
+string User::getUserType()//returns usertype data
 {
 	return usertype;
 }
@@ -18,7 +18,7 @@ void User::setPassword(string setpassword)
 {
 }
 
-string User::getPassword()
+string User::getPassword()//returns password data
 {
 	return userpassword;
 }
@@ -27,7 +27,7 @@ void User::setUsername(string setusername)
 {
 }
 
-string User::getUsername()
+string User::getUsername()//returns username data
 {
 	return username;
 }

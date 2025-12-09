@@ -9,10 +9,10 @@ Employee::Employee(string username, string userpassword, string usertype, string
 	this->usertype = usertype;
 }
 
-void Employee::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+void Employee::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)//Gives user options for menus to interact with
 {
 	cout << endl << "Logged in as Employee" << endl << "Below are the menu options: " << endl;
-	cout << "1. Scan new products into the system." << endl << "2. Edit existing product." << endl << "3. Open the orders list." << endl << "4. Show current stock." << endl << endl;
+	cout << "1. Scan new products into the system." << endl << "2. Edit existing product." << endl << "3. Open the orders list." << endl << "4. Show current stock." << endl << "5. Log Out." << endl << endl;
 
 	int choice;
 	try {
@@ -47,6 +47,10 @@ void Employee::Screen(SerialTree* Tree1, vector<string> ProductList, vector<stri
 		cout << endl << endl;
 		Screen(Tree1, ProductList, ConditionList, Status, orders);
 		break;
+	case 5:
+		cin.clear();
+		cin.ignore(1000, '\n');
+		break;
 	default:
 		cout << "Incorrect option, please try again." << endl << endl;
 		Screen(Tree1, ProductList, ConditionList, Status, orders);
@@ -57,7 +61,7 @@ void Employee::Screen(SerialTree* Tree1, vector<string> ProductList, vector<stri
 
 }
 
-void Employee::OrderMenu(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+void Employee::OrderMenu(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)//Allows the employee to assign products to an order to complete it
 {
 	orders->ShowOrders();
 	cout << endl << "What order would you like to fulfill? Enter -1 to go cancel." << endl << endl;
@@ -115,7 +119,7 @@ void Employee::OrderMenu(SerialTree* Tree1, vector<string> ProductList, vector<s
 
 }
 
-void Employee::BulkInput(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+void Employee::BulkInput(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)//Lets the user input many serials to add many new products to the system. These products will all have the same data except the serial to speed up efficiency when inputting a lot of them.
 {
 
 	int product;
@@ -188,20 +192,20 @@ void Employee::BulkInput(SerialTree* Tree1, vector<string> ProductList, vector<s
 			Screen(Tree1, ProductList, ConditionList, Status, orders);
 			break;
 		}
-		if (!Tree1->Find(serial)) {
+
+		try {
+			Tree1->Find(serial);
+		}
+		catch (Errors& e) {
 			Tree1->Insert(serial, ProductList[product], ConditionList[condition], Status[1], this->username);
 			Tree1->operator+();
-		}
-		else {
-			cout << "This serial number already exists." << endl << endl;
 		}
 
 	}
 
-
 }
 
-void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)//Lets the user change any part of an object's data
 {
 	cout << endl << "Please enter serial: " << endl << endl;
 	int serial;
@@ -221,20 +225,10 @@ void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector
 		int newserial;
 		cin >> newserial;
 
-		//if (!Tree1->Find(newserial)) {
-
 		Tree1->Insert(newserial, Tree1->GetProduct(serial), Tree1->GetCondition(serial), Tree1->GetStatus(serial), this->username);
 		Tree1->Delete(serial);
 		cout << "New item added." << endl;
 		Screen(Tree1, ProductList, ConditionList, Status, orders);
-
-			//break;
-		//}
-		//else {
-		//	cout << "Already exists." << endl;
-		//	EditProduct(Tree1, ProductList, ConditionList, Status, orders);
-		//	break;
-		//}
 		
 	case 2:
 		cout << endl << "Please enter the product to be changed to." << endl << endl;
@@ -305,7 +299,7 @@ void Employee::EditProduct(SerialTree* Tree1, vector<string> ProductList, vector
 	}
 }
 
-void Employee::DeleteProduct(SerialTree* Tree1)
+void Employee::DeleteProduct(SerialTree* Tree1)//Lets the user delete a product
 {
 	cout << endl << "What item would you like to delete? Please enter the serial number." << endl << endl;
 	int delnum;
@@ -315,7 +309,7 @@ void Employee::DeleteProduct(SerialTree* Tree1)
 
 
 
-void Employee::ShowStock(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+void Employee::ShowStock(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)//Shows all the stock in the system and has options to find a single object from its serial, list many objects filtered by their product type, or to show all the stock in order of serials.
 {
 	cout << endl << "Options for browsing stock: " << endl << "1. Search for serial." << endl << "2. Filter by product." << endl << "3. Display all stock" << endl << endl;
 	int choice;

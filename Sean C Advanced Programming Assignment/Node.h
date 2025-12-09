@@ -7,8 +7,8 @@ using namespace std;
 class Node
 {
 public:
-    Node* leftChild;
-    Node* rightChild;
+    Node* left;
+    Node* right;
 
     int serialNumber;
     string product;

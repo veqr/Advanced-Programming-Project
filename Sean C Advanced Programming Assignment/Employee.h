@@ -2,6 +2,8 @@
 #include "User.h"
 #include "Orders.h"
 
+using namespace std;
+
 class Employee : public User
 {
 public:

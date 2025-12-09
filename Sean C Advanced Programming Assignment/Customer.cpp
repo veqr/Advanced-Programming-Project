@@ -9,7 +9,7 @@ Customer::Customer(string username, string userpassword, string usertype, string
 	this->address = address;
 }
 
-void Customer::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+void Customer::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)//Gives user options for menus to interact with
 {
 	cout << endl << "Logged in as Customer" << endl << "Below are the menu options: " << endl << endl;
 	cout << "1. Make an order." << endl << "2. Log out." << endl << endl;
@@ -48,7 +48,7 @@ void Customer::Screen(SerialTree* Tree1, vector<string> ProductList, vector<stri
 	
 }
 
-void Customer::MakeOrder(vector<string> ProductList, vector<string> ConditionList, Orders* orders)
+void Customer::MakeOrder(vector<string> ProductList, vector<string> ConditionList, Orders* orders)//Makes a new order and calls AddOrder to add it to the ordersList vector
 {
 	cout << endl << "Please enter product to be ordered." << endl << endl;
 	for (int i = 0; i < ProductList.size(); i++) {

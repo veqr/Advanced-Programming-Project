@@ -24,7 +24,6 @@ public:
 	string getUsername();
 	virtual void Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders);
 	~User();
-private:
 
 };
 

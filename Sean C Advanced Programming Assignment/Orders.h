@@ -16,7 +16,6 @@ public:
 	void AddOrder(vector<string> order);
 	void CompleteOrder(int key);
 	int NewOrderNumber();
-	//string GetProduct
 
 
 	Orders();

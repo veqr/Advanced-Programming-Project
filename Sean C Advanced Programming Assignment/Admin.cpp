@@ -8,7 +8,7 @@ Admin::Admin(string username, string userpassword, string usertype, string addre
 	this->usertype = usertype;
 }
 
-void Admin::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+void Admin::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)//Gives user options for menus to interact with
 {
 	cout << endl << "Logged in as Admin" << endl << "Below are the menu options: " << endl << endl;
 	cout << "1. Delete a Customer." << endl << "2. Log out." << endl << endl;
@@ -42,7 +42,7 @@ void Admin::Screen(SerialTree* Tree1, vector<string> ProductList, vector<string>
 	}
 }
 
-void Admin::DeleteCustomer(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)
+void Admin::DeleteCustomer(SerialTree* Tree1, vector<string> ProductList, vector<string> ConditionList, vector<string> Status, Orders* orders)//Deletes a customer that the admin has chosen to delete
 {
 	cout << endl << "Please enter a customer to delete." << endl << endl;
 	for (int i = 0; i < UserManager::customerDetails.size(); i++) {
